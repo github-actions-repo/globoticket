@@ -109,7 +109,7 @@ jobs:
       name: 'staging10'
     steps:
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_DEPLOY }}
     - name: TenPercent
@@ -125,7 +125,7 @@ jobs:
       name: 'staging30'
     steps:
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_DEPLOY }}
     - name: TenPercent
@@ -142,7 +142,7 @@ jobs:
     needs: staging30
     steps:
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_DEPLOY }}
       - name: vip swap
