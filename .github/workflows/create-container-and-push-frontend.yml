@@ -1,4 +1,4 @@
-name: "Chapter 08: create-container-and-push-frontend"
+name: "Chapter 08: Create-container-and-push-frontend"
 permissions:
   actions: write
   packages: write

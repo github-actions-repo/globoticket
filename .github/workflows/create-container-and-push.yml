@@ -1,4 +1,4 @@
-name: "Chapter 09: create-container-and-push"
+name: "Chapter 09: Create-container-and-push"
 permissions:
   actions: write
   packages: write

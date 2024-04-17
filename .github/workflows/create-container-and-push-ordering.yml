@@ -1,4 +1,4 @@
-name: "Chapter 08: create-container-and-push-ordering"
+name: "Chapter 08: Create-container-and-push-ordering"
 permissions:
   actions: write
   packages: write
