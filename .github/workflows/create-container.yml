@@ -59,7 +59,7 @@ jobs:
           images: actions-with-actions/globoticket 
 
       - name: Build and push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
             context: ${{github.workspace}}
             file: ${{inputs.dockerfilePath}}
