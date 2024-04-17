@@ -1,12 +1,12 @@
-name: "chapter 08: Generate job output using markdown"
+name: "Chapter 08: Generate job output using markdown"
 on:
   workflow_dispatch: 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Generate markdown
         run: |
           echo "## Test results" >> "$GITHUB_STEP_SUMMARY"

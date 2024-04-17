@@ -1,4 +1,4 @@
-name: "chapter 09: deploy-frontend-container"
+name: "Chapter 09: Deploy-frontend-container"
 permissions:
   actions: write
   packages: write
@@ -18,7 +18,7 @@ jobs:
   deploy-staging:
     outputs:
       homepage: ${{ steps.set-homepage.outputs.homepage }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     environment:
       name: 'staging'
     steps:
@@ -38,7 +38,7 @@ jobs:
           target: './'
 
       - name: set kubernetes context
-        uses: azure/k8s-set-context@v3
+        uses: azure/k8s-set-context@v4
         id: setcontext
         with:
           method: kubeconfig
@@ -54,7 +54,7 @@ jobs:
             container-registry-password: ${{ secrets.EXTENDED_ACCESSTOKEN }}
 
       - name: Deploy to AKS
-        uses: Azure/k8s-deploy@v4
+        uses: Azure/k8s-deploy@v5
         with:
           namespace: '${{env.namespace}}'
           manifests: |
@@ -65,18 +65,16 @@ jobs:
         run: |
           export homepage=$(kubectl get svc frontend --namespace ${{env.namespace}} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "homepage=$homepage" >> $GITHUB_OUTPUT
-
-
    
   verify-staging:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     needs: deploy-staging
     environment:
       name: 'staging'
     steps:  
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
-      - name: get homepage variable from previous job
+      - name: Get homepage variable from previous job
         run: |
           echo "homepage=http://${{needs.deploy-staging.outputs.homepage}}"
      
@@ -87,12 +85,13 @@ jobs:
         run: |
           dotnet test Tests.Playwright/Tests.Playwright.csproj
                       --logger "liquid.md;logfilename=testResults.md"
+
       - name: Output the results to the actions jobsummary
         if: always()
         run: cat $(find . -name testResults.md) >> $GITHUB_STEP_SUMMARY
            
   deploy-production:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     needs: verify-staging
     environment:
       name: 'production'
@@ -113,14 +112,14 @@ jobs:
           target: './'
 
       - name: set kubernetes context
-        uses: azure/k8s-set-context@v3
+        uses: azure/k8s-set-context@v4
         id: setcontext
         with:
           method: kubeconfig
           kubeconfig: ${{secrets.KUBECONFIG}} 
  
       - name: provide pull secrets so we can pull the image from gitHub
-        uses: azure/k8s-create-secret@v4
+        uses: azure/k8s-create-secret@v5
         with:
             namespace: '${{env.namespace}}'
             secret-name: 'pullsecret'
@@ -129,7 +128,7 @@ jobs:
             container-registry-password: ${{ secrets.EXTENDED_ACCESSTOKEN }}
 
       - name: Deploy to AKS
-        uses: Azure/k8s-deploy@v4
+        uses: Azure/k8s-deploy@v5
         with:
           namespace: '${{env.namespace}}'
           manifests: |

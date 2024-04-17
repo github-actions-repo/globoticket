@@ -1,18 +1,18 @@
-name: "chapter 09: deployment views"
+name: "Chapter 09: Deployment views"
 env:
   appname: globoticket
   resourcegroup: actionsinaction
   slotname: staging
 on:
   workflow_dispatch:
-     
+
 jobs:
 # We start with deploying the application to Azure Web App. 
 # We pull the zip file artifact that contains the web application from the
 # release and use it directly to deploy to the web app. After deployment, we 
 # generate output, which is the URL we can use to validate the deployment. 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     environment:
       name: 'staging'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -28,19 +28,19 @@ jobs:
           target: './'
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_DEPLOY }}
         
       - name: Create Deployment Slot Staging
-        uses: Azure/cli@v1.0.7
+        uses: Azure/cli@v2
         with:
           inlineScript: |
             az webapp deployment slot create --name ${{env.appname}} --resource-group ${{env.resourcegroup}} --slot ${{env.slotname}}
           
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: '${{env.appname}}'
           slot-name: '${{env.slotname}}'

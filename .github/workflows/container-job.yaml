@@ -1,19 +1,22 @@
-name: "chapter 08: Build inside container"
+name: "Chapter 08: Build inside container"
 on:
   push:
     branches: ["main"]
     paths:
     - 'frontend/**'
+
   workflow_dispatch:
+
 jobs:
   container-build-job:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     container:
-      image: mcr.microsoft.com/dotnet/sdk:6.0
+      image: mcr.microsoft.com/dotnet/sdk:8.0
       volumes:
         - ${{github.workspace}}:/src
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         
       - name: Build with dotnet
         run: dotnet build frontend/frontend.csproj --configuration Release
@@ -22,7 +25,7 @@ jobs:
         run: dotnet publish frontend/frontend.csproj -c Release -o /app/publish
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend
           path: /app/publish

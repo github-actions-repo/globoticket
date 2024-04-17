@@ -1,4 +1,4 @@
-name: "chapter 08: Compile and Test fast feedback"
+name: "Chapter 08: Compile and Test fast feedback"
 permissions:
   actions: write
   contents: read
@@ -14,18 +14,18 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ vars.JOBS_RUNNER }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
       
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
 
@@ -33,7 +33,8 @@ jobs:
       run: dotnet add unittests/unittests.csproj  package LiquidTestReports.Markdown
       
     - name: Test
-      run: dotnet test --logger "liquid.md;logfilename=testResults.md" 
+      run: dotnet test --logger "liquid.md;logfilename=testResults.md"
+
     - name: Output the results to the actions jobsummary
       if: always()
       run: cat $(find . -name testResults.md) >> $GITHUB_STEP_SUMMARY

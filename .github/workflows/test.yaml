@@ -1,4 +1,4 @@
-name: "test"
+name: "Test"
 permissions:
   actions: write
   packages: write
@@ -12,14 +12,16 @@ env:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        
       - name: Retrieve latest packages
         run: |
           export FRONTED_VERSION=$(gh api  /user/packages/container/frontend/versions | jq '.[0].metadata.container.tags[0]')
           echo "FRONTED_VERSION=$FRONTED_VERSION" >> $GITHUB_ENV
+
       - name: dump env
         run: |
           echo $FRONTED_VERSION

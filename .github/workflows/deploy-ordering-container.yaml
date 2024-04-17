@@ -1,4 +1,4 @@
-name: "chapter 09: deploy-ordering-container"
+name: "Chapter 09: Deploy-ordering-container"
 permissions:
   actions: write
   packages: write
@@ -16,7 +16,7 @@ on:
 
 jobs:
   deploy-staging:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     environment:
       name: 'staging'
     steps:
@@ -27,7 +27,7 @@ jobs:
           echo "Latest Release: $LATEST_RELEASE"
           echo "::set-output name=latest_release::$LATEST_RELEASE"
 
-      - name: get release artifacts for deployment, picks data from latest release
+      - name: Get release artifacts for deployment, picks data from latest release
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: ${{ steps.latest_release.outputs.latest_release }}
@@ -35,14 +35,14 @@ jobs:
           file: ".*"
           target: './'
 
-      - name: set kubernetes context
-        uses: azure/k8s-set-context@v3
+      - name: Set kubernetes context
+        uses: azure/k8s-set-context@v4
         id: setcontext
         with:
           method: kubeconfig
           kubeconfig: ${{secrets.KUBECONFIG}} 
  
-      - name: provide pull secrets so we can pull the image from gitHub
+      - name: Provide pull secrets so we can pull the image from gitHub
         uses: azure/k8s-create-secret@v4
         with:
             namespace: '${{env.namespace}}'
@@ -52,15 +52,14 @@ jobs:
             container-registry-password: ${{ secrets.EXTENDED_ACCESSTOKEN }}
 
       - name: Deploy to AKS
-        uses: Azure/k8s-deploy@v4
+        uses: Azure/k8s-deploy@v5
         with:
           namespace: '${{env.namespace}}'
           manifests: |
              ./${{env.deploymentFile}}
-      
-           
+
   deploy-production:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     needs: deploy-staging
     environment:
       name: 'production'
@@ -72,7 +71,7 @@ jobs:
             echo "Latest Release: $LATEST_RELEASE"
             echo "::set-output name=latest_release::$LATEST_RELEASE"
 
-      - name: get release artifacts for deployment, picks data from latest release
+      - name: Get release artifacts for deployment, picks data from latest release
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           version: ${{ steps.latest_release.outputs.latest_release }}
@@ -81,14 +80,14 @@ jobs:
           target: './'
 
       - name: set kubernetes context
-        uses: azure/k8s-set-context@v3
+        uses: azure/k8s-set-context@v4
         id: setcontext
         with:
           method: kubeconfig
           kubeconfig: ${{secrets.KUBECONFIG}} 
  
       - name: provide pull secrets so we can pull the image from gitHub
-        uses: azure/k8s-create-secret@v4
+        uses: azure/k8s-create-secret@v5
         with:
             namespace: '${{env.namespace}}'
             secret-name: 'pullsecret'
@@ -97,7 +96,7 @@ jobs:
             container-registry-password: ${{ secrets.EXTENDED_ACCESSTOKEN }}
 
       - name: Deploy to AKS
-        uses: Azure/k8s-deploy@v4
+        uses: Azure/k8s-deploy@v5
         with:
           namespace: '${{env.namespace}}'
           manifests: |

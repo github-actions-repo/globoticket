@@ -1,4 +1,4 @@
-name: "chapter 08: Security Testing"
+name: "Chapter 08: Security Testing"
  
 env:
   imageRepository: 'frontend'
@@ -28,12 +28,13 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
+
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
@@ -46,7 +47,7 @@ jobs:
   # this way we can find vulnerabilities in our container images
   # we need to determine the latest version of the images and use that version to scan  
   analyzecontainers:    
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     permissions:
       actions: read
       contents: read
@@ -55,18 +56,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with: 
           fetch-depth: 0
+
       #determine the version of the image
-      - name: Install GitVersion 
-        uses: gittools/actions/gitversion/setup@v0.9.7
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
         with: 
           versionSpec: '5.x'
 
       - name: Determine Version 
         id: gitversion 
-        uses: gittools/actions/gitversion/execute@v0.9.7 
+        uses: gittools/actions/gitversion/execute@v1.1.1
       
         # use trivy to scan the container image
       - name: Run Trivy vulnerability scanner
@@ -78,8 +80,9 @@ jobs:
         env:
           TRIVY_USERNAME:  ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      # upload the results to the security tab in github   
-      # this is the same place where the codeql results are uploaded 
+          
+      # upload the results to the security tab in github
+      # this is the same place where the codeql results are uploaded
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:

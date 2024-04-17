@@ -1,4 +1,4 @@
-name: "chapter 09: reusable workflow traffic shifting"
+name: "Chapter 09: Reusable workflow traffic shifting"
 permissions:
   actions: write
 
@@ -24,7 +24,7 @@ on:
 
 jobs:       
   ten_percent_traffic:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.JOBS_RUNNER }}
     environment:
       name: 'staging'
     steps:
