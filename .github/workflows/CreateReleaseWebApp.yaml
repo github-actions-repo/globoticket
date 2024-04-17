@@ -1,4 +1,4 @@
-name: "chapter 09 create-and-release-web-apps"
+name: "Chapter 09: Create-and-release-web-apps"
 on:
   workflow_dispatch:
 jobs:
