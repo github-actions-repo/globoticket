@@ -34,7 +34,7 @@ jobs:
           creds: ${{ secrets.azurecredentials }}
         
       - name: Move 10% trafic to staging
-        uses: Azure/cli@v2
+        uses: Azure/cli@v2.0.0
         with:
           azcliversion: 2.30.0
           inlineScript: 'az webapp traffic-routing set --distribution ${{inputs.slotname}}=$${{inputs.percentage}}  --name ${{inputs.appname}} --resource-group ${{inputs.resourcegroup}}'
